@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 5s # Intervalo de coleta de métricas
+
+scrape_configs:
+  - job_name: 'java-app'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['java-app:8080'] # Endpoint da aplicação Spring (exemplo: /actuator/prometheus)
