@@ -18,12 +18,12 @@ services:
     entrypoint: ["k6", "run", "/scripts/test.js"] # Define o comando de execução do k6
     environment:
       - K6_OUT=influxdb=http://influxdb:8086/k6
-      - BASE_URL=http://java-app:8080/api/v1/customers/from-api?suspended=false&delay=1000
-#      - BASE_URL=http://java-app-mock:8080/api/v1/customers/mock?delay=1000
+      - APP_HOST=java-app
+      - APP_PATH=/api/v1/customers/from-api?suspended=false&delay=100
       - DURATION=300s
       - VUS=30
-      - MAX_VUS=610
-      - RPS=600
+      - MAX_VUS=100
+      - RPS=500
     volumes:
       - ./k6-scripts:/scripts # Mapeia o volume para os scripts de teste
     depends_on:
@@ -41,12 +41,34 @@ services:
     volumes:
       - ./target:/app # Mapeia o volume para a aplicação
     ports:
-      - "8080:8080"
+      - "8081:8080"
     deploy:
       resources:
         limits:
-          cpus: "1.0" # Limita o uso de CPU a 1 core
-          memory: "2g" # Limita o uso de memória a 2 GB
+          cpus: "0.5" # Limita o uso de CPU a 0.5 core
+          memory: "1g" # Limita o uso de memória a 1 GB
+    depends_on:
+      - postgres
+      - java-app-mock
+
+  java-app-virtual:
+    image: openjdk:21-jdk # Usa a imagem oficial do OpenJDK 21
+    container_name: java_app_virtual_container
+    environment:
+      JDBC_URL: "postgres_container" # Configura a memória máxima e mínima para 2 GB
+      VIRTUAL_THREADS: "true"
+      API_HOST: "java-app-mock"
+      API_PORT: "8080"
+    command: ["java", "-jar", "/app/iobound-thread-app-0.0.1-SNAPSHOT.jar"] # Comando para rodar a aplicação
+    volumes:
+      - ./target:/app # Mapeia o volume para a aplicação
+    ports:
+      - "8084:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5" # Limita o uso de CPU a 0.5 core
+          memory: "1g" # Limita o uso de memória a 1 GB
     depends_on:
       - postgres
 
@@ -102,7 +124,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.0" # Limita o uso de CPU a 1 core
+          cpus: "2.0" # Limita o uso de CPU a 1 core
           memory: "2g" # Limita o uso de memória a 2 GB
     depends_on:
       - postgres

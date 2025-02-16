@@ -15,7 +15,7 @@ export let options = {
 };
 
 export default function() {
-    let baseUrl = __ENV.BASE_URL || "http://java-app:8080/api/v1/customers/123";
+    let baseUrl = "http://" + __ENV.APP_HOST + ":8080" + __ENV.APP_PATH;
     let res = http.get(baseUrl);
     check(res, { "status is 200": (r) => r.status === 200 });
 }
