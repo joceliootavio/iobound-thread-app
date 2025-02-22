@@ -1,0 +1,62 @@
+{
+  "id": 1,
+  "name": "John Doe",
+  "age": 30,
+  "email": "johndoe@example.com",
+  "address": {
+    "street": "123 Main St",
+    "city": "New York",
+    "state": "NY",
+    "zip": "10001"
+  },
+  "phoneNumbers": [
+    "+1 123-456-7890",
+    "+1 987-654-3210"
+  ],
+  "isActive": true,
+  "registrationDate": "2025-02-22",
+  "lastLogin": "2025-02-21",
+  "preferences": {
+    "language": "en",
+    "timezone": "UTC",
+    "currency": "USD"
+  },
+  "company": {
+    "name": "Acme Corp",
+    "role": "Software Engineer",
+    "department": "Development"
+  },
+  "socialMedia": {
+    "facebook": "john.doe.fb",
+    "twitter": "@john_doe",
+    "linkedin": "john-doe"
+  },
+  "projects": [
+    {
+      "projectName": "Project Alpha",
+      "deadline": "2025-12-31",
+      "status": "In Progress"
+    },
+    {
+      "projectName": "Project Beta",
+      "deadline": "2025-06-30",
+      "status": "Completed"
+    }
+  ],
+  "skills": [
+    "Kotlin",
+    "Java",
+    "JavaScript",
+    "SQL"
+  ],
+  "hobbies": [
+    "Reading",
+    "Traveling",
+    "Photography"
+  ],
+  "subscription": {
+    "type": "Premium",
+    "expiresOn": "2025-08-01"
+  },
+  "notes": "User prefers working remotely."
+}

@@ -11,3 +11,8 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['java-app-virtual:8080'] # Endpoint da aplicação Spring (exemplo: /actuator/prometheus)
+
+  - job_name: 'java-app-mock'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['java-app-mock:8080'] # Endpoint da aplicação Spring (exemplo: /actuator/prometheus)

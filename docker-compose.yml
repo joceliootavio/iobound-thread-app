@@ -19,11 +19,11 @@ services:
     environment:
       - K6_OUT=influxdb=http://influxdb:8086/k6
       - APP_HOST=java-app
-      - APP_PATH=/api/v1/customers/from-api?suspended=false&delay=100
+      - APP_PATH=/api/v1/customers/from-api?suspended=false&delay=100&jsonFileName=sample_30_fields.json
       - DURATION=300s
-      - VUS=30
+      - VUS=10
       - MAX_VUS=100
-      - RPS=500
+      - RPS=400
     volumes:
       - ./k6-scripts:/scripts # Mapeia o volume para os scripts de teste
     depends_on:
@@ -35,6 +35,7 @@ services:
     environment:
       JDBC_URL: "postgres_container" # Configura a memória máxima e mínima para 2 GB
       VIRTUAL_THREADS: "false"
+      SERVER_UNDERTOW_THREADS_WORKER: "100"
       API_HOST: "java-app-mock"
       API_PORT: "8080"
     command: ["java", "-jar", "/app/iobound-thread-app-0.0.1-SNAPSHOT.jar"] # Comando para rodar a aplicação

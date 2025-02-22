@@ -18,9 +18,10 @@ class MockWebClient(
     private val restUri: String
 ) {
 
-    fun getRequestSuspended(path: String? = null) {
+    fun getRequestSuspended(path: String? = null) : String {
 //        getRequest(path)
         sleep(1000)
+        return ""
     }
 
     fun getRequest(path: String? = null) {
