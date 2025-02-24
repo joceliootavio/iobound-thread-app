@@ -17,6 +17,7 @@
 	<properties>
 		<java.version>21</java.version>
 		<kotlin.version>1.9.25</kotlin.version>
+		<kotlinx-coroutines.version>1.9.0</kotlinx-coroutines.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -40,6 +41,21 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.reactivestreams</groupId>
+			<artifactId>reactive-streams</artifactId>
+			<version>1.0.4</version>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-core</artifactId>
+			<version>3.7.3</version> <!-- Verifique se a versão é a mais recente -->
+		</dependency>
+		<dependency>
+			<groupId>com.github.javafaker</groupId>
+			<artifactId>javafaker</artifactId>
+			<version>1.0.2</version>
 		</dependency>
 
 		<dependency>
@@ -68,12 +84,17 @@
 		<dependency>
 			<groupId>org.jetbrains.kotlinx</groupId>
 			<artifactId>kotlinx-coroutines-core</artifactId>
-			<version>1.7.3</version> <!-- Use a versão mais recente -->
+			<version>${kotlinx-coroutines.version}</version> <!-- Use a versão mais recente -->
+		</dependency>
+		<dependency>
+			<groupId>org.jetbrains.kotlinx</groupId>
+			<artifactId>kotlinx-coroutines-reactor</artifactId>
+			<version>${kotlinx-coroutines.version}</version> <!-- Use a versão mais recente -->
 		</dependency>
 		<dependency>
 			<groupId>org.jetbrains.kotlinx</groupId>
 			<artifactId>kotlinx-coroutines-jdk8</artifactId>
-			<version>1.7.3</version> <!-- Para suporte a CompletableFuture -->
+			<version>${kotlinx-coroutines.version}</version> <!-- Para suporte a CompletableFuture -->
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
@@ -129,6 +150,14 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<id>process-aot</id>-->
+<!--						<goals>-->
+<!--							<goal>process-aot</goal>-->
+<!--						</goals>-->
+<!--					</execution>-->
+<!--				</executions>-->
 			</plugin>
 			<plugin>
 				<groupId>org.jetbrains.kotlin</groupId>
