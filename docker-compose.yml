@@ -19,23 +19,23 @@ services:
     environment:
       - K6_OUT=influxdb=http://influxdb:8086/k6
       - APP_HOST=java-app
-      - APP_PATH=/api/v1/customers/from-api/user?delay=100&times=1
-#      - APP_PATH=/api/v1/customers/from-api-suspended?delay=100
-      - DURATION=300s
-      - VUS=10
-      - MAX_VUS=100
-      - RPS=300
+#      - APP_PATH=/api/v1/customers/from-api/user?delay=100&times=2
+      - APP_PATH=/api/v1/customers/from-api-suspended?delay=100&times=2
+      - DURATION=600s
+      - VUS=50
+      - MAX_VUS=150
+      - RPS=500
     volumes:
       - ./k6-scripts:/scripts # Mapeia o volume para os scripts de teste
 
   java-app:
-    image: maven:3.9.6-eclipse-temurin-21 # Usa Maven com JDK 21
+    image: openjdk:21-jdk # Usa Maven com JDK 21
 #    build: .
     container_name: java_app
     environment:
       JDBC_URL: "postgres_container"
       VIRTUAL_THREADS: "false"
-      SERVER_UNDERTOW_THREADS_WORKER: "100"
+#      SERVER_UNDERTOW_THREADS_WORKER: "200"
       API_HOST: "java-app-mock"
       API_PORT: "8080"
     volumes:
@@ -46,15 +46,6 @@ services:
       [
         "sh", "-c",
         "java
-         -XX:+UseSerialGC
-         -XX:+AlwaysPreTouch
-         -XX:+UseStringDeduplication
-         -XX:+OptimizeStringConcat
-         -XX:MaxRAMPercentage=75
-         -XX:ActiveProcessorCount=1
-         -XX:+UseContainerSupport
-         -XX:+UnlockDiagnosticVMOptions
-         -Djava.security.egd=file:/dev/./urandom
          -Dcom.sun.management.jmxremote.port=5000
          -Dcom.sun.management.jmxremote.rmi.port=5000
          -Dcom.sun.management.jmxremote.local.only=false
@@ -69,7 +60,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5" # Limita o uso de CPU a 0.5 core
+          cpus: "2.0" # Limita o uso de CPU a 0.5 core
           memory: "1g" # Limita o uso de memória a 1 GB
 
   java-app-virtual:
@@ -80,15 +71,26 @@ services:
       VIRTUAL_THREADS: "true"
       API_HOST: "java-app-mock"
       API_PORT: "8080"
-    command: ["java", "-jar", "/app/iobound-thread-app-0.0.1-SNAPSHOT.jar"] # Comando para rodar a aplicação
+    working_dir: /app
+    command: [
+      "sh", "-c",
+      "java
+         -Dcom.sun.management.jmxremote.port=5001
+         -Dcom.sun.management.jmxremote.rmi.port=5001
+         -Dcom.sun.management.jmxremote.local.only=false
+         -Dcom.sun.management.jmxremote.authenticate=false
+         -Dcom.sun.management.jmxremote.ssl=false
+         -Djava.rmi.server.hostname=localhost
+         -jar target/iobound-thread-app-0.0.1-SNAPSHOT.jar"
+    ]
     volumes:
-      - ./target:/app # Mapeia o volume para a aplicação
+      - .:/app # Mapeia o volume para a aplicação
     ports:
       - "8084:8080"
     deploy:
       resources:
         limits:
-          cpus: "0.5" # Limita o uso de CPU a 0.5 core
+          cpus: "2.0" # Limita o uso de CPU a 0.5 core
           memory: "1g" # Limita o uso de memória a 1 GB
     depends_on:
       - postgres

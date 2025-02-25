@@ -1,21 +1,12 @@
 package br.com.benchmark.iobound_thread_app.api
 
 import br.com.benchmark.iobound_thread_app.adapter.out.feign.FeignWebClient
-import br.com.benchmark.iobound_thread_app.adapter.out.http.MockWebClient
 import br.com.benchmark.iobound_thread_app.adapter.out.rds.DatabaseService
 import br.com.benchmark.iobound_thread_app.api.response.User
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
-import org.springframework.core.io.Resource
-import org.springframework.core.io.ResourceLoader
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import java.io.InputStreamReader
-import java.lang.Thread.sleep
-import java.time.LocalDateTime
-import kotlin.math.log
 
 @RestController
 @RequestMapping("/api/v1/customers")
@@ -75,11 +66,23 @@ class TestApi(
     @GetMapping("/from-api-suspended", produces = ["application/json"])
     @ResponseStatus(HttpStatus.OK)
     suspend fun getFromAnotherApiSuspended(
-        @RequestParam("delay") delay: Long
+        @RequestParam("delay") delay: Long,
+        @RequestParam("times") times: Long = 1,
+        @RequestParam("async") async: Boolean = false
     ): User {
         val start = System.currentTimeMillis()
         return withContext(Dispatchers.IO) {
-            feignClient.getUser(delay)
+            (1..times).map {
+                async {
+                    logger.info("chamando /mock/user")
+                    feignClient.getUser(delay)
+                }.also {
+                    if (!async)
+                        it.await()
+                }
+
+            }.awaitAll()
+                .last()
                 .also {
                     logger.info("endpoint /suspended executado em ${System.currentTimeMillis() - start}ms")
                 }

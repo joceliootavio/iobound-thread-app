@@ -7,12 +7,13 @@
     - Parametros da JVM
     - Mais chamadas de api
 
-- Utilizar mais cpu e memória
+    - Usar mais cpu e memoria
+- GraalVM
+- Usar reactor
 - Incluir chamada no DynamoDB
 - Consulta no banco RDS
 - Incluir logs de json
-- Usar Java 17
-- Native com GraalVM
+- Usar Java 11
 - Incluir Agent e tracing
 
 ## Comandos úteis

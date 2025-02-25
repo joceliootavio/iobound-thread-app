@@ -3,13 +3,22 @@ import { check } from "k6";
 
 export let options = {
     scenarios: {
-        constant_rps: {
+        warmup_phase: {
             executor: "constant-arrival-rate",
-            rate: __ENV.RPS || 100, // Número de requisições por segundo (RPS)
-            timeUnit: "1s", // Unidade de tempo para o rate
-            duration: __ENV.DURATION || "60s", // Duração total do teste
-            preAllocatedVUs: __ENV.VUS || 4, // Número de VUs pré-alocados
-            maxVUs: __ENV.MAX_VUS || 50, // Número máximo de VUs
+            rate: __ENV.RPS / 2, // Começa com metade do RPS
+            timeUnit: "1s",
+            duration: "4m", // Warm-up por 3 minutos
+            preAllocatedVUs: __ENV.VUS,
+            maxVUs: __ENV.VUS,
+        },
+        full_load: {
+            executor: "constant-arrival-rate",
+            rate: __ENV.RPS, // RPS completo
+            timeUnit: "1s",
+            startTime: "4m", // Começa após a fase de aquecimento
+            duration: __ENV.DURATION,
+            preAllocatedVUs: __ENV.VUS,
+            maxVUs: __ENV.MAX_VUS,
         },
     },
 };
