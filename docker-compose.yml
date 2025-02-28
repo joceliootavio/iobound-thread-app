@@ -19,12 +19,14 @@ services:
     environment:
       - K6_OUT=influxdb=http://influxdb:8086/k6
       - APP_HOST=java-app
-#      - APP_PATH=/api/v1/customers/from-api/user?delay=100&times=2
-      - APP_PATH=/api/v1/customers/from-api-suspended?delay=100&times=2
+      - APP_PORT=8080
+      - APP_PATH=/api/blocking/from-api/user?delay=200&times=2
+#      - APP_PATH=/api/coroutine/from-api/user?delay=200&times=2
+#      - APP_PATH=/mock/user?delay=100
       - DURATION=600s
       - VUS=50
-      - MAX_VUS=150
-      - RPS=500
+      - MAX_VUS=300
+      - RPS=400
     volumes:
       - ./k6-scripts:/scripts # Mapeia o volume para os scripts de teste
 
@@ -35,17 +37,19 @@ services:
     environment:
       JDBC_URL: "postgres_container"
       VIRTUAL_THREADS: "false"
-#      SERVER_UNDERTOW_THREADS_WORKER: "200"
+      SERVER_UNDERTOW_THREADS_WORKER: "80"
       API_HOST: "java-app-mock"
-      API_PORT: "8080"
+      API_PORT: "8443"
     volumes:
       - .:/app # Mapeia o código-fonte para o container
-#      - C:\Users\jocel\.m2:/root/.m2 # Mapeia o cache do Maven
     working_dir: /app
     command:
       [
         "sh", "-c",
-        "java
+        "ls -la /app/certs && \
+        java
+         -Djavax.net.ssl.trustStore=/app/certs/keystore.p12 
+         -Djavax.net.ssl.trustStorePassword=changeit
          -Dcom.sun.management.jmxremote.port=5000
          -Dcom.sun.management.jmxremote.rmi.port=5000
          -Dcom.sun.management.jmxremote.local.only=false
@@ -75,6 +79,8 @@ services:
     command: [
       "sh", "-c",
       "java
+         -Djavax.net.ssl.trustStore=/app/certs/keystore.p12 
+         -Djavax.net.ssl.trustStorePassword=changeit      
          -Dcom.sun.management.jmxremote.port=5001
          -Dcom.sun.management.jmxremote.rmi.port=5001
          -Dcom.sun.management.jmxremote.local.only=false
@@ -132,18 +138,21 @@ services:
       - prometheus
 
   java-app-mock:
-    image: openjdk:21-jdk # Usa a imagem oficial do OpenJDK 21
+    build:
+      context: .
+      dockerfile: Dockerfile-mock
     container_name: java_app_mock
     environment:
       JDBC_URL: "postgres_container" # Configura a memória máxima e mínima para 2 GB
       VIRTUAL_THREADS: "true"
-      API_HOST: "wiremock"
-      API_PORT: "8080"
-    command: ["java", "-jar", "/app/iobound-thread-app-0.0.1-SNAPSHOT.jar"] # Comando para rodar a aplicação
-    volumes:
-      - ./target:/app # Mapeia o volume para a aplicação
+      SERVER_PORT: "8443"
+      SERVER_SSL_KEY_STORE: "/app/certs/keystore.p12"
+      SERVER_SSL_KEY_STORE_PASSWORD: "changeit"
+      SERVER_SSL_KEY_STORE_TYPE: "PKCS12"
+      SERVER_SSL_KEY_ALIAS: "mycert"
     ports:
       - "8083:8080"
+      - "8443:8443"
     deploy:
       resources:
         limits:

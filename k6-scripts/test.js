@@ -7,7 +7,7 @@ export let options = {
             executor: "constant-arrival-rate",
             rate: __ENV.RPS / 2, // Começa com metade do RPS
             timeUnit: "1s",
-            duration: "4m", // Warm-up por 3 minutos
+            duration: "4m", // Warm-up por 4 minutos
             preAllocatedVUs: __ENV.VUS,
             maxVUs: __ENV.VUS,
         },
@@ -24,7 +24,7 @@ export let options = {
 };
 
 export default function() {
-    let baseUrl = "http://" + __ENV.APP_HOST + ":8080" + __ENV.APP_PATH;
+    let baseUrl = "http://" + __ENV.APP_HOST + ":" + __ENV.APP_PORT + __ENV.APP_PATH;
     let res = http.get(baseUrl);
     check(res, { "status is 200": (r) => r.status === 200 });
 }

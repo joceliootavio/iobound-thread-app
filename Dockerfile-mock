@@ -1,0 +1,17 @@
+FROM openjdk:21-jdk
+
+WORKDIR /app
+
+# Copia os arquivos necessários
+COPY generate-cert.sh /app/generate-cert.sh
+COPY target/iobound-thread-app-0.0.1-SNAPSHOT.jar /app/app.jar
+
+# Torna o script executável dentro do container
+RUN chmod +x /app/generate-cert.sh
+
+# Executa o script antes de iniciar a aplicação
+RUN /app/generate-cert.sh
+
+RUN ls /app
+
+CMD ["java", "-jar", "/app/app.jar"]
