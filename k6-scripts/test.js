@@ -2,6 +2,7 @@ import http from "k6/http";
 import { check } from "k6";
 
 export let options = {
+    insecureSkipTLSVerify: true,
     scenarios: {
         warmup_phase: {
             executor: "constant-arrival-rate",

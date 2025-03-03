@@ -2,13 +2,13 @@ package br.com.benchmark.iobound_thread_app.api
 
 import br.com.benchmark.iobound_thread_app.api.response.*
 import com.github.javafaker.Faker
+import kotlinx.coroutines.delay
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.io.InputStreamReader
-import java.lang.Thread.sleep
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -24,18 +24,18 @@ class MockApi(
 
     @GetMapping("/user", produces = ["application/json"])
     @ResponseStatus(HttpStatus.OK)
-    fun mockGetUser(
+    suspend fun mockGetUser(
         @RequestParam("delay") delay: Long
     ): String = mockAnyJsonFile(delay, "user")
 
     @GetMapping("/json", produces = ["application/json"])
     @ResponseStatus(HttpStatus.OK)
-    fun mockAnyJsonFile(
+    suspend fun mockAnyJsonFile(
         @RequestParam("delay") delay: Long,
         @RequestParam("jsonFileName") jsonFileName: String?
     ): String {
         val start = System.currentTimeMillis()
-        sleep(delay)
+        delay(delay)
 
         val response: String?
         if (jsonFileName == null) {

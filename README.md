@@ -8,13 +8,15 @@
     - Mais chamadas de api
 
     - Usar mais cpu e memoria
+    - incluir metodo o(n2)
+    - Consulta no banco RDS 
+    - First Load Serialization
 - GraalVM
 - Usar reactor
 - Incluir chamada no DynamoDB
-- Consulta no banco RDS
 - Incluir logs de json
 - Usar Java 11
-- Incluir Agent e tracing
+- Incluir Agent datadog
 
 ## Comandos úteis
 
@@ -62,4 +64,18 @@ Aumentar para 200 Threads de plataforma é a unica estratégia que não afeta o 
 CPU deu pico de 56% no momento que dobra o RPS mas depois voltou a média de 30%
 
 ### Mock
-- Suporta até 3000 RPS com no máximo 10ms de overhead
+Suporta até 3000 RPS com no máximo 10ms de overhead
+
+### Asincronismo
+Inclusao de virtual threads para paralelizar as chamadas do mock reduziu o tempo total de resposta, porém não foi exatamente a metada
+
+### Https
+Chamadas https aumentam o uso de cpu e o tempo de resposta
+
+### Pool de conexões JDBC
+Usar o gerenciamento padrão de pool do spring faz com que a conexão se mantenha aberta durante todo o processamento da requisição,
+portanto quando o tempo de resposta é alto o pool acaba sendo um limitador de throughput.
+
+### First request
+Primeira execução tem um overhead 5x maior quando utilizamos objetos serializados, ao que tudo indica nos logs é um overhead
+trazido pela estratégia lazy loading do spring + reflection.

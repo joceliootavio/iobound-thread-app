@@ -26,7 +26,7 @@ class CoroutineApi(
         @PathVariable("id") id: Int
     ) {
         val start = System.currentTimeMillis()
-        databaseService.suspendedFindById(id)
+        databaseService.findById(id)
         logger.info("endpoint from-rds executado em ${System.currentTimeMillis() - start}ms")
     }
 
