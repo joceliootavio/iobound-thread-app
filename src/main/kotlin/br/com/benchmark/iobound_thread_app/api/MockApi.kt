@@ -1,17 +1,15 @@
 package br.com.benchmark.iobound_thread_app.api
 
 import br.com.benchmark.iobound_thread_app.api.response.*
-import com.github.javafaker.Faker
 import kotlinx.coroutines.delay
-import org.slf4j.LoggerFactory
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.io.InputStreamReader
-import java.time.LocalDate
+import java.lang.Thread.sleep
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import kotlin.random.Random
 
 @RestController
 @RequestMapping("/mock")
@@ -19,23 +17,30 @@ class MockApi(
     val resourceLoader: ResourceLoader
 ) {
 
-    private val logger = LoggerFactory.getLogger(this.javaClass)
     private val resourceMap: MutableMap<String, String> = mutableMapOf()
 
     @GetMapping("/user", produces = ["application/json"])
     @ResponseStatus(HttpStatus.OK)
     suspend fun mockGetUser(
-        @RequestParam("delay") delay: Long
-    ): String = mockAnyJsonFile(delay, "user")
+        @RequestParam("delay") delay: Long? = null,
+        @RequestParam("sleep") sleep: Long? = null
+    ): String = mockAnyJsonFile(
+        delay = delay,
+        sleep = sleep,
+        jsonFileName = "user"
+    )
 
     @GetMapping("/json", produces = ["application/json"])
     @ResponseStatus(HttpStatus.OK)
     suspend fun mockAnyJsonFile(
-        @RequestParam("delay") delay: Long,
+        @RequestParam("delay") delay: Long? = null,
+        @RequestParam("sleep") sleep: Long? = null,
         @RequestParam("jsonFileName") jsonFileName: String?
     ): String {
         val start = System.currentTimeMillis()
-        delay(delay)
+
+        delay?.let { delay(delay) }
+        sleep?.let { sleep(sleep) }
 
         val response: String?
         if (jsonFileName == null) {
@@ -57,48 +62,55 @@ class MockApi(
             }
     }
 
-    fun generateFakeUser(): User {
-        val faker = Faker()
-        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    private fun randomString(length: Int) = (1..length)
+        .map { ('a'..'z').random() }
+        .joinToString("")
 
+    fun generateFakeUser(): User {
         return User(
-            id = faker.number().randomDigit(),
-            name = faker.name().fullName(),
-            age = faker.number().numberBetween(18, 60),
-            email = faker.internet().emailAddress(),
+            id = Random.nextInt(1, 1000),
+            name = randomString(8),
+            age = Random.nextInt(18, 60),
+            email = "${randomString(5)}@example.com",
             address = Address(
-                street = faker.address().streetAddress(),
-                city = faker.address().city(),
-                state = faker.address().stateAbbr(),
-                zip = faker.address().zipCode()
+                street = randomString(10),
+                city = randomString(6),
+                state = randomString(2),
+                zip = Random.nextInt(10000, 99999).toString()
             ),
-            phoneNumbers = listOf(faker.phoneNumber().cellPhone(), faker.phoneNumber().cellPhone()),
-            isActive = faker.bool().bool(),
-            registrationDate = LocalDate.now().format(dateFormatter),
-            lastLogin = LocalDate.now().minusDays(1).format(dateFormatter),
+            phoneNumbers = listOf("+55${Random.nextInt(100000000, 999999999)}"),
+            isActive = Random.nextBoolean(),
+            registrationDate = "2023-01-01",
+            lastLogin = "2024-01-01",
             preferences = Preferences(
-                language = faker.options().option("en", "es", "fr"),
-                timezone = "UTC",
-                currency = faker.currency().code()
+                language = "en",
+                timezone = "GMT-3",
+                currency = "USD"
             ),
             company = Company(
-                name = faker.company().name(),
-                role = faker.job().title(),
-                department = faker.company().industry()
+                name = randomString(10),
+                role = "Developer",
+                department = "Engineering"
             ),
             socialMedia = SocialMedia(
-                facebook = "${faker.name().username()}.fb",
-                twitter = "@${faker.name().username()}",
-                linkedin = faker.name().username()
+                facebook = "fb.com/${randomString(6)}",
+                twitter = "twitter.com/${randomString(6)}",
+                linkedin = "linkedin.com/in/${randomString(6)}"
             ),
             projects = listOf(
-                Project("Project Alpha", "2025-12-31", "In Progress"),
-                Project("Project Beta", "2025-06-30", "Completed")
+                Project(
+                    projectName = randomString(10),
+                    deadline = "2024-12-31",
+                    status = "In Progress"
+                )
             ),
-            skills = listOf("Kotlin", "Java", "JavaScript", "SQL"),
-            hobbies = listOf("Reading", "Traveling", "Photography"),
-            subscription = Subscription("Premium", "2025-08-01"),
-            notes = "User prefers working remotely."
+            skills = listOf("Kotlin", "Java", "AWS"),
+            hobbies = listOf("Reading", "Gaming"),
+            subscription = Subscription(
+                type = "Premium",
+                expiresOn = "2025-12-31"
+            ),
+            notes = "Generated user data."
         )
     }
 
