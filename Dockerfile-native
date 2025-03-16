@@ -1,0 +1,25 @@
+FROM ghcr.io/graalvm/jdk-community:21.0.2 AS build
+
+WORKDIR /app
+
+# Instala o gzip (e tar se necessário)
+RUN microdnf install -y gzip tar
+
+# Instala o Maven manualmente
+RUN curl -fsSL https://downloads.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz \
+    | tar -xz -C /usr/local && ln -s /usr/local/apache-maven-3.9.6/bin/mvn /usr/local/bin/mvn
+
+RUN java -version
+
+# Copia o código-fonte e compila
+COPY . /app
+RUN mvn -Pnative native:compile -DskipTests
+
+# Etapa final com a imagem mínima do GraalVM
+FROM gcr.io/distroless/static
+
+WORKDIR /app
+COPY --from=build /app/target/iobound-thread-app-0.0.1-SNAPSHOT /app/app
+
+EXPOSE 8080
+CMD ["/app/app"]

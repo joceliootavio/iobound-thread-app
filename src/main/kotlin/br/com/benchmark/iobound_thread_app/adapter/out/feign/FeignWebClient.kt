@@ -10,10 +10,10 @@ interface FeignWebClient {
 
     @GetMapping("/mock/json")
     fun getFromApi(
-        @RequestParam("delay") delay: Long,
+        @RequestParam("delay") delay: Long?,
         @RequestParam("jsonFileName") jsonFileName: String?
     ): String
 
     @GetMapping("/mock/user")
-    fun getUser(@RequestParam("delay") delay: Long): User
+    fun getUser(@RequestParam("delay") delay: Long?): User
 }

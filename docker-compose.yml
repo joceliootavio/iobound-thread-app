@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   postgres:
     image: postgres:latest
@@ -20,13 +19,15 @@ services:
       - K6_OUT=influxdb=http://influxdb:8086/k6
       - APP_CONTEXT=http://java-app:8080
 #      - APP_CONTEXT=https://java-app-mock:8443
-#      - APP_PATH=/api/blocking/from-api/user?delay=200&times=2&memoryOps=true&async=false
+      - APP_PATH=/api/blocking/from-api/user?__delay=300&times=1&__memoryOps=true&__userFromRds=123&__async=false
+#      - APP_PATH=/api/coroutine/from-api/user?delay=200&times=2&async=true
+#      - APP_PATH=/api/reactive/from-api/user?delay=200&times=2
 #      - APP_PATH=/mock/user
-      - APP_PATH=/api/blocking/from-rds/123
-      - P95_TARGET=25
-#      - DURATION=300s
-#      - MAX_VUS=100
-#      - RPS=2000
+#      - APP_PATH=/api/blocking/from-rds/123
+      - P95_TARGET=600
+      - DURATION=300s
+      - MAX_VUS=70
+      - RPS=200
     volumes:
       - ./k6-scripts:/scripts
 
@@ -35,9 +36,13 @@ services:
     container_name: java_app
     environment:
       JDBC_URL: "postgres_container"
-      VIRTUAL_THREADS: "true"
 #      REST_URI: "http://java-app-mock:8080"
       REST_URI: "https://java-app-mock:8443"
+#      VIRTUAL_THREADS: "true"
+#      THREAD_POOL_TYPE: "VIRTUAL_THREADS"
+#      THREAD_POOL_SIZE: "200"
+      SERVER_UNDERTOW_THREADS_WORKER: 200
+#      SERVER_UNDERTOW_THREADS_IO: 4
     volumes:
       - .:/app
     working_dir: /app
@@ -64,26 +69,6 @@ services:
         limits:
           cpus: "1.0"
           memory: "2g"
-
-  # Novo container usando imagem nativa do GraalVM
-  java-app-native:
-    image: graalvm-native-app:latest # Nome da imagem gerada pelo build nativo
-    build:
-      context: .
-      dockerfile: Dockerfile-native # Dockerfile específico para o build nativo
-    container_name: java_app_native
-    environment:
-      JDBC_URL: "postgres_container"
-      REST_URI: "https://java-app-mock:8443"
-    ports:
-      - "8082:8080"
-    deploy:
-      resources:
-        limits:
-          cpus: "1.5"
-          memory: "2g"
-    depends_on:
-      - postgres
 
   influxdb:
     image: influxdb:1.11.8

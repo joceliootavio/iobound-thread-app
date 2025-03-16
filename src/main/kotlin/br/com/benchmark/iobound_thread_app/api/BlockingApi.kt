@@ -5,9 +5,12 @@ import br.com.benchmark.iobound_thread_app.adapter.out.rds.DatabaseService
 import br.com.benchmark.iobound_thread_app.api.response.User
 import br.com.benchmark.iobound_thread_app.application.service.MemoryOpsService
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import java.util.concurrent.Executors
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 
 @RestController
@@ -15,11 +18,12 @@ import java.util.concurrent.Future
 class BlockingApi(
     val databaseService: DatabaseService,
     val feignClient: FeignWebClient,
-    val memoryOpsService: MemoryOpsService
+    val memoryOpsService: MemoryOpsService,
+    @Autowired @Qualifier("myThreadPool")
+    val executor: ExecutorService
 ) {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
-    private val executor = Executors.newVirtualThreadPerTaskExecutor()
 
     @GetMapping("/from-rds/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -31,26 +35,13 @@ class BlockingApi(
         logger.info("endpoint from-rds executado em ${System.currentTimeMillis() - start}ms")
     }
 
-    @GetMapping("/from-api", produces = ["application/json"])
-    @ResponseStatus(HttpStatus.OK)
-    fun getFromAnotherApi(
-        @RequestParam("delay") delay: Long,
-        @RequestParam("jsonFileName") jsonFileName: String?
-    ): String {
-        val start = System.currentTimeMillis()
-        return feignClient.getFromApi(delay, jsonFileName)
-            .also {
-                logger.info("endpoint /from-api executado em ${System.currentTimeMillis() - start}ms")
-            }
-    }
-
     @GetMapping("/from-api/user", produces = ["application/json"])
     @ResponseStatus(HttpStatus.OK)
     fun getFromAnotherApiUser(
-        @RequestParam("delay") delay: Long,
+        @RequestParam("delay") delay: Long?,
         @RequestParam("userFromRds") userId: Int? = null,
         @RequestParam("memoryOps") memoryOps: Boolean = false,
-        @RequestParam("times") times: Long = 1,
+        @RequestParam("times") times: Long = 0,
         @RequestParam("async") async: Boolean = false,
     ): User? {
         val start = System.currentTimeMillis()
@@ -67,10 +58,15 @@ class BlockingApi(
         if (async) {
             val futureList: MutableList<Future<User>> = mutableListOf()
             repeat(times.toInt()) {
-                futureList.add(executor.submit<User> {
-                    logger.info("chamando $it mock/user async")
-                    feignClient.getUser(delay)
-                })
+                futureList.add(
+                    CompletableFuture.supplyAsync(
+                        {
+                            logger.info("chamando $it mock/user async")
+                            feignClient.getUser(delay)
+                        },
+                        executor
+                    )
+                )
             }
 
             return futureList.map { it.get() }
@@ -88,6 +84,7 @@ class BlockingApi(
             return result
                 .also {
                     logger.info("endpoint /user executado em ${System.currentTimeMillis() - start}ms")
+                    logger.debug("payload retornado: {}", result)
                 }
         }
     }

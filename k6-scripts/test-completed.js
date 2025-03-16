@@ -31,6 +31,21 @@ export let options = {
             maxVUs: __ENV.MAX_VUS * 1.5,
         },
     },
+     thresholds: {
+            'http_req_failed': [
+                {
+                    threshold: 'rate<0.05',
+                    abortOnFail: true
+                }
+            ],
+            'http_req_duration': [
+                {
+                    threshold: `p(95)<${__ENV.P95_TARGET}`,
+                    abortOnFail: true,
+                    delayAbortEval: '30s'
+                }
+            ]
+        }
 };
 
 export default function() {

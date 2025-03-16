@@ -14,4 +14,12 @@ RUN /app/generate-cert.sh
 
 RUN ls /app
 
-CMD ["java", "-jar", "/app/app.jar"]
+CMD ["java", \
+    "-jar", \
+    "-Dcom.sun.management.jmxremote.port=5001", \
+    "-Dcom.sun.management.jmxremote.rmi.port=5001", \
+    "-Dcom.sun.management.jmxremote.local.only=false", \
+    "-Dcom.sun.management.jmxremote.authenticate=false", \
+    "-Dcom.sun.management.jmxremote.ssl=false", \
+    "-Djava.rmi.server.hostname=localhost", \
+     "/app/app.jar"]
