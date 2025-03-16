@@ -19,7 +19,8 @@ services:
       - K6_OUT=influxdb=http://influxdb:8086/k6
       - APP_CONTEXT=http://java-app:8080
 #      - APP_CONTEXT=https://java-app-mock:8443
-      - APP_PATH=/api/blocking/from-api/user?__delay=300&times=1&__memoryOps=true&__userFromRds=123&__async=false
+#      - APP_PATH=/api/blocking/from-api/user?__delay=300&__times=1&__memoryOps=true&__async=false&__userFromRds=e07d7927-6659-4668-9b95-54f7ef91334b
+      - APP_PATH=/api/blocking/from-api/user?__delay=300&__times=1&memoryOps=true&__async=false&userFromRds=e07d7927-6659-4668-9b95-54f7ef91334b
 #      - APP_PATH=/api/coroutine/from-api/user?delay=200&times=2&async=true
 #      - APP_PATH=/api/reactive/from-api/user?delay=200&times=2
 #      - APP_PATH=/mock/user

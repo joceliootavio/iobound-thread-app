@@ -11,8 +11,8 @@ export let options = {
             preAllocatedVUs: 20,
             maxVUs: 50,
             stages: [
-                { duration: '1m', target: 50 },
-                { duration: '1m', target: 50 },
+                { duration: '1m', target: 500 },
+                { duration: '2m', target: 1000 },
 //                { duration: '2m', target: 1000 },
             ],
 //            stages: [ otimized

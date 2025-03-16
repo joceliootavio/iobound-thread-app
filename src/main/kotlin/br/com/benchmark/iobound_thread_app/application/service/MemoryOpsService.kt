@@ -4,9 +4,12 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class MemoryOpsService(private val meterRegistry: MeterRegistry) {
+
+    val uuidList: List<String> = List(100) { UUID.randomUUID().toString() }
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
@@ -18,15 +21,12 @@ class MemoryOpsService(private val meterRegistry: MeterRegistry) {
             .register(meterRegistry)
 
         val timeTaken = timer.recordCallable {
-            val numbers = List(100) { it } // Lista de 100 elementos [0, 1, ..., 99]
-            var sum = 0
-
-            for (i in numbers.indices) {
-                for (j in numbers.indices) {
-                    sum += numbers[i] * numbers[j] // Operação O(n^2)
-                }
+            for (i in uuidList.indices) {
+                val concatened = uuidList[i] + UUID.randomUUID().toString()
+//                for (j in uuidList.indices) {
+//                    val concatened = uuidList[i] + uuidList[j] // Operação O(n^2)
+//                }
             }
-            sum
         }
 
         logger.info("memory operation - END")

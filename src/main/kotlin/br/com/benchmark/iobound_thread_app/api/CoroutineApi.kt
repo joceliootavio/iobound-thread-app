@@ -23,7 +23,7 @@ class CoroutineApi(
     @GetMapping("/from-rds/{id}")
     @ResponseStatus(HttpStatus.OK)
     suspend fun fetchRecord(
-        @PathVariable("id") id: Int
+        @PathVariable("id") id: String
     ) {
         val start = System.currentTimeMillis()
         databaseService.findById(id)

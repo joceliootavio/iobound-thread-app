@@ -2,6 +2,7 @@ package br.com.benchmark.iobound_thread_app.api
 
 import br.com.benchmark.iobound_thread_app.adapter.out.feign.FeignWebClient
 import br.com.benchmark.iobound_thread_app.adapter.out.rds.DatabaseService
+import br.com.benchmark.iobound_thread_app.adapter.out.rds.entity.CustomerEntity
 import br.com.benchmark.iobound_thread_app.api.response.User
 import br.com.benchmark.iobound_thread_app.application.service.MemoryOpsService
 import org.slf4j.LoggerFactory
@@ -28,18 +29,20 @@ class BlockingApi(
     @GetMapping("/from-rds/{id}")
     @ResponseStatus(HttpStatus.OK)
     fun fetchRecord(
-        @PathVariable("id") id: Int
-    ) {
+        @PathVariable("id") id: String
+    ): CustomerEntity? {
         val start = System.currentTimeMillis()
-        databaseService.findById(id)
-        logger.info("endpoint from-rds executado em ${System.currentTimeMillis() - start}ms")
+        return databaseService.findById(id)
+            .also {
+                logger.info("endpoint from-rds executado em ${System.currentTimeMillis() - start}ms")
+            }
     }
 
     @GetMapping("/from-api/user", produces = ["application/json"])
     @ResponseStatus(HttpStatus.OK)
     fun getFromAnotherApiUser(
         @RequestParam("delay") delay: Long?,
-        @RequestParam("userFromRds") userId: Int? = null,
+        @RequestParam("userFromRds") userId: String? = null,
         @RequestParam("memoryOps") memoryOps: Boolean = false,
         @RequestParam("times") times: Long = 0,
         @RequestParam("async") async: Boolean = false,
