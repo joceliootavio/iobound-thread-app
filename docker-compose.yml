@@ -23,7 +23,6 @@ services:
 #      - APP_PATH=/api/coroutine/from-api/user?delay=200&times=2&async=true
 #      - APP_PATH=/api/reactive/from-api/user?delay=200&times=2
 #      - APP_PATH=/mock/user
-#      - APP_PATH=/api/blocking/from-rds/123
       - P95_TARGET=600
       - DURATION=300s
       - MAX_VUS=70
