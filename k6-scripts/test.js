@@ -4,17 +4,24 @@ import { check, sleep } from 'k6';
 export let options = {
     insecureSkipTLSVerify: true,
     scenarios: {
-        progressive_rps: {
-            executor: 'ramping-arrival-rate',  // Define um crescimento de RPS
-            startRate: 10,  // Começa com 10 RPS
-            timeUnit: '1s', // Medido por segundo
-            preAllocatedVUs: 20,
-            maxVUs: 50,
+        progressive_vus: {
+            executor: 'ramping-vus',  // Define um crescimento de RPS
             stages: [
-                { duration: '1m', target: 500 },
-                { duration: '2m', target: 1000 },
-//                { duration: '2m', target: 1000 },
+                { duration: '2m', target: 200 },
+                { duration: '2m', target: 300 },
+                { duration: '4m', target: 500 },
             ],
+//        progressive_rps: {
+//            executor: 'ramping-arrival-rate',  // Define um crescimento de RPS
+//            startRate: 10,  // Começa com 10 RPS
+//            timeUnit: '1s', // Medido por segundo
+//            preAllocatedVUs: 20,
+//            maxVUs: 50,
+//            stages: [
+//                { duration: '1m', target: 500 },
+//                { duration: '2m', target: 1000 },
+//                { duration: '2m', target: 1000 },
+//            ],
 //            stages: [ otimized
 //                { duration: '2m', target: 50 },
 //                { duration: '4m', target: 200 },
@@ -40,9 +47,9 @@ export let options = {
         ],
         'http_req_duration': [
             {
-                threshold: `p(95)<${__ENV.P95_TARGET}`,
+                threshold: `p(95)<1000`,
                 abortOnFail: true,
-                delayAbortEval: '30s'
+                delayAbortEval: '10s'
             }
         ]
     }

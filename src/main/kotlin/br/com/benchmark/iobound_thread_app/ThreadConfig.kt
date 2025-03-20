@@ -21,4 +21,12 @@ class ThreadConfig(
             else -> ForkJoinPool.commonPool()
         }
 
+    @Bean("httpClientThreadPool")
+    fun httpClientThreadPool() =
+        when(threadPoolType) {
+            "CACHED" -> Executors.newCachedThreadPool()
+            "FIXED" -> Executors.newFixedThreadPool(threadPoolSize)
+            "VIRTUAL" -> Executors.newVirtualThreadPerTaskExecutor()
+            else -> ForkJoinPool.commonPool()
+        }
 }

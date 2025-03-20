@@ -10,10 +10,19 @@
     - Usar mais cpu e memoria
     - incluir metodo o(n2)
     - Consulta no banco RDS 
-    - First Load Serialization
-- GraalVM
+    - First Load Serialization - WebClient reativo
+    - Incluir milhões de registro na tabela
+    - Buscar registros com sucesso do banco
+    - Usar string randomicas nas collections do memoryOps
+- Endpoint com servlet
 - Incluir chamada no DynamoDB
 - Incluir Agent datadog
+- GraalVM
+- 
+
+
+### Async Profiler
+./asprof -e lock -d 30 -f lock-profile.html 12345
 
 ## Comandos úteis
 
@@ -172,3 +181,105 @@ Por padrão no Spring o hikari (pool de conexões) vem com no máximo 10 conexõ
 - Serviços de terceiros
   - Apis
   - Banco de dados
+  - SNS/SQS
+  - Kafka
+
+
+### Atenção nos testes
+
+- Reinicie a aplicação sempre que for executar um novo teste pois o JIT pode ter otimizado o código.
+- Inicie o teste com no máximo metade do RPS que deseja atingir, simulando cenário de rollout em prod.
+- 
+
+### Ambiente AWS
+- No ambiente AWS incluimos a latência mẽdia de 7ms para cada chamada de api rest.
+- Há tambẽm o pedãgio por usar ferramentas de APM.
+
+### Serviços com auto acoplamento
+
+Quando o microserviço tem um alto acoplamento com suas dependências qualquer oscilação no tempo de resposta de uma das dependências degrada a performance do microserviço e consequentemente sua capacidade.
+
+### Autoscaling
+
+Em aplicações que não é usado o máximo da capacidade dos recursos o autoscaling por cpu ou memória é ineficiente.
+
+### Quantidade de VUs no k6
+
+É importante definir como máximo de VUs o nũmero de execuções simultaneas que queremos atingir, pois usar um valor muito alto pode enfileirar as requisicoes.
+Favoreça o uso de progressive vus ao invés de progressive rps
+
+### HttClient x Feign Client com virtual threads
+
+Configuração:
+- Rest Client: Http Client
+- Serialização: Não
+- Async: false
+- Virtual threads: true
+
+Suportou o pico de 800 RPS com um tempo máximo de resposta de 1s
+
+Configuração:
+- Rest Client: Feign Client
+- Serialização: Sim
+- Async: false
+- Virtual threads: true
+
+Parou de executar ao chegar em menos de 50 RPS
+
+### Apresentação
+
+1. Fala sobre capacidade
+3. Testes de performance
+   - Uso de VUs elevado
+4. Preparar ambiente local
+5. Executa teste com memoryOps, 1 vCPU e 1000 RPS (operações em memória O(n2))
+6. Adiciona fromRDS
+7. Adiciona memoryOps e http client 1x300ms
+8. Volta ao passo de requisitos não funcionais (SLO)
+  - DAU
+  - Throughput
+    - RPS Médio
+    - RPS Pico
+  - Tempo de resposta (p95)
+9. Reduz pra 70 RPS
+10. Incrementa para 2 chamadas de http client
+11. Aumenta para 2 vCPUs
+12. Aumenta para 4 vCPUs
+13. Aumenta para 600ms o delay das chamadas http client
+14. Quanto custa? 
+    - R$ 320,00 / vCPU
+    - 34 microserviços na VI2
+15. Observabilidade
+16. Parametros de tunning da JVM
+17. GraalVM
+18. Uso de CPU e diferença entre metrica k6 e metrica http server
+19. Diminui para 30 RPS
+20. IOBound x CPUBound
+21. Gargalos
+    - Pool de threads
+    - Pool de conexões
+    - CPU
+    - Memória
+    - Full Scan
+    - Serviços de terceiros
+        - Apis
+        - Banco de dados
+        - SNS/SQS
+        - Kafka*
+20. Calculo de tamanho de pool
+    - Analogia com hodómetro
+21. Benchmarks de performance da comunidade
+    - Tomcat x Undertow
+    - IO Blocking x IO NonBlocking (Reactive)
+    - Threads x Coroutines (Light threads) (Testar diferençca entre sleep e delay no mock)
+    - Analogia com cozinha
+22. Melhorar tempo de resposta quando chamadas não são dependentes
+24. Assincronismo x Paralelismo x Programação concorrente
+25. Volta para 300ms, aumenta para 3 http client, api 3x300ms e assincronismo com threads
+26. Cenários de alto throughput
+27. Aumenta para 100 RPS
+28. WebClient reativo
+
+
+sudo usermod -aG docker jocelio
+newgrp docker
