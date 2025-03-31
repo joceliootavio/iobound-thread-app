@@ -13,9 +13,11 @@ class DatabaseService(private val jdbcTemplate: JdbcTemplate) {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     fun findById(id: String): CustomerEntity? {
+        val userId = if (id == "random") UUID.randomUUID() else UUID.fromString(id)
+
         val sql = "SELECT * FROM public.customer where id = ?"
-        logger.info("executando consulta sql")
-        return jdbcTemplate.query(sql, CustomerMapper(), UUID.fromString(id)).firstOrNull()
+        logger.info("executando consulta sql para userId = $userId")
+        return jdbcTemplate.query(sql, CustomerMapper(), userId).firstOrNull()
             ?.also {
                 logger.info("customer retornado: $it")
             }

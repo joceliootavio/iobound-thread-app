@@ -19,16 +19,6 @@ services:
       - K6_OUT=influxdb=http://influxdb:8086/k6
       - APP_CONTEXT=http://java-app:8080
 #      - APP_CONTEXT=https://java-app-mock:8443
-      - APP_PATH=/api/blocking/from-api/user?__delay=300&__times=1&__memoryOps=true&__async=false&__userFromRds=e07d7927-6659-4668-9b95-54f7ef91334b
-#      - APP_PATH=/api/blocking/from-api/user?delay=200&times=2&__memoryOps=true&__async=false&__userFromRds=e07d7927-6659-4668-9b95-54f7ef91334b
-#      - APP_PATH=/api/blocking/from-api/json?delay=200&times=2
-#      - APP_PATH=/api/coroutine/from-api/user?delay=200&times=2&async=true
-#      - APP_PATH=/api/reactive/from-api/user?delay=200&times=2
-#      - APP_PATH=/mock/user?delay=200
-      - P95_TARGET=600
-      - DURATION=300s
-      - MAX_VUS=70
-      - RPS=200
     volumes:
       - ./k6-scripts:/scripts
 
@@ -40,9 +30,9 @@ services:
 #      REST_URI: "http://java-app-mock:8080"
       REST_URI: "https://java-app-mock:8443"
 #      VIRTUAL_THREADS: "true"
-      THREAD_POOL_TYPE: "VIRTUAL_THREADS"
+#      THREAD_POOL_TYPE: "VIRTUAL_THREADS"
 #      THREAD_POOL_SIZE: "200"
-#      SERVER_UNDERTOW_THREADS_WORKER: 200
+#      SERVER_UNDERTOW_THREADS_WORKER: 100
 #      SERVER_UNDERTOW_THREADS_IO: 4
     volumes:
       - .:/app
@@ -82,6 +72,11 @@ services:
       - "8086:8086"
     volumes:
       - influxdb-data:/var/lib/influxdb
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "1g"
 
   prometheus:
     image: prom/prometheus:latest

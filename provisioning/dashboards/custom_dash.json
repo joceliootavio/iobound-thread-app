@@ -113,7 +113,7 @@
             "lastNotNull",
             "max"
           ],
-          "displayMode": "list",
+          "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
@@ -816,9 +816,9 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum(rate(http_server_requests_seconds_count{application=\"$application\", instance=\"$instance\"}[1m]))",
+          "expr": "sum(rate(http_server_requests_seconds_count{application=\"$application\", instance=\"$instance\", uri!~\"/actuator.*\"}[1m])) by (uri)",
           "instant": false,
-          "legendFormat": "HTTP",
+          "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
@@ -871,7 +871,7 @@
           },
           "decimals": 1,
           "mappings": [],
-          "max": 1,
+          "max": 2,
           "min": 0,
           "thresholds": {
             "mode": "absolute",

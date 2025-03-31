@@ -88,7 +88,7 @@ class BlockingApi(
     fun getFromAnotherApiUser(
         @RequestParam("delay") delay: Long?,
         @RequestParam("userFromRds") userId: String? = null,
-        @RequestParam("memoryOps") memoryOps: Boolean = false,
+        @RequestParam("memoryOps") memoryOps: String? = null,
         @RequestParam("times") times: Long = 0,
         @RequestParam("async") async: Boolean = false,
         @RequestParam("httpClientFlag") httpClientFlag: Boolean = false,
@@ -101,8 +101,8 @@ class BlockingApi(
             logger.info("finding user from RDS - END")
         }
 
-        if (memoryOps)
-            memoryOpsService.simulateQuadraticOperation()
+        if (memoryOps != null)
+            memoryOpsService.simulateOperation(memoryOps)
 
         if (async) {
             val futureList: MutableList<Future<User>> = mutableListOf()
