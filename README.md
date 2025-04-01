@@ -1,20 +1,74 @@
-### Próximos passos
+### Tecnologias testes de performance
 
-- Incluir chamada no DynamoDB
-- Incluir Agent datadog
-- GraalVM
+- Docker
+- k6
+- Grafana
+- Prometheus
+- InfluxDB
+- Java App Mock
+- Mission Control
+- VisualVM
+- Micrometer
+
+### Tecnologias Microserviço
+
+- Java 21
+- Spring Boot 3.4
+- Kotlin 1.9.0
+- Open Feign
+- Postgres
+- Undertow
+
+
+### Pontos de atenção
+- Experimentar configurações
+- Limitar recursos nos containers
+- Manter máquina ligada
+- Considerar que local não temos Latência adicional de rede AWS
+- No ambiente de produção o Datadog Agent adiociona em 20% o uso de cpu
+- Uso de https para considerar o uso de cpu pelo processo de criptografia
+- Configuração inicial do java-app será 2vCPU e 1GB de memória
+- Testes realizados apenas com 1 container pois o intuito é testar a capacidade de uma unidade do microserviço.
+- Importante realizar teste adicional para validar o uso de mais de uma task/pod em ambiente AWS, assim como o auto-scaling 
+
+
+### Requisitos não funcionais (SLO)
+  - DAU
+  - Throughput
+  - RPS Médio
+  - RPS Pico
+  - Tempo de resposta (p95, Latência)
+ 
+
+#### Exemplo de média ruim
+
+    Latências: [100ms, 110ms, 105ms, 120ms, 150ms, 180ms, 2500ms]
+    Média = 463,57ms
+    Percentil 95 (p95) = **2500ms**
+
+
+### Threads
+
+#### Pool de threads
+![Pool de threads](images/pool_threads.png)
+
+
+#### Virtual threads
+![Threads Virtuais](images/virtual_threads.png)
+
+
 
 ## Comandos úteis
 
 docker stats --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemPerc}}\t{{.MemUsage}}"
+
+### Parametros JVM testados
 
 java -XX:+UnlockDiagnosticVMOptions -XX:+LogTouchedMethods -jar target/iobound-thread-app-0.0.1-SNAPSHOT.jar
 java -Xshare:off -XX:+UnlockDiagnosticVMOptions -XX:+LogTouchedMethods -jar target/iobound-thread-app-0.0.1-SNAPSHOT.jar > classlist.txt
 java -Xshare:dump -XX:SharedClassListFile=classlist.txt -XX:SharedArchiveFile=spring-cds.jsa -jar target/iobound-thread-app-0.0.1-SNAPSHOT.jar
 java -Xshare:on -XX:SharedArchiveFile=spring-cds.jsa -jar target/iobound-thread-app-0.0.1-SNAPSHOT.jar
 java -Dspring.aot.enabled=true -jar target/iobound-thread-app-0.0.1-SNAPSHOT.jar
-
-### Parametros JVM
 
 -XX:MaxRAMPercentage=75
 -XX:+UseParallelGC
@@ -192,3 +246,10 @@ Parou de executar ao chegar em menos de 50 RPS
 ### Reativo
 
 Reativo atinge o pico de 500 RPS no progressive_rps
+
+
+### Próximos passos
+
+- Incluir chamada no DynamoDB
+- Incluir Agent datadog
+- GraalVM
