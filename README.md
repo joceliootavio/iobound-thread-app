@@ -21,16 +21,31 @@
 - PostgreSQL
 - Undertow
 
-## Pontos de Atenção
+## Estratẽgias utilizadas
 - Experimentar diferentes configurações
 - Limitar recursos nos containers
 - Manter a máquina ligada durante os testes
-- Considerar que, localmente, não há latência adicional de rede AWS
-- No ambiente de produção, o Datadog Agent adiciona 20% ao uso de CPU
 - Uso de HTTPS impacta o consumo de CPU devido ao processo de criptografia
 - Configuração inicial do Java App: 2 vCPU e 1GB de memória
 - Testes realizados com apenas 1 container para avaliar a capacidade unitária do microserviço
+
+## Ambiente testes vs real
+- Latência adicional de rede AWS ~7ms
+- Datadog Agent adiciona 20% ao uso de CPU
 - Importante testar múltiplas tasks/pods em ambiente AWS e validar auto-scaling
+
+
+
+## SHOW ME THE CODE
+<br>
+<br>
+<br>
+
+<br>
+<br>
+<br>
+<br>
+
 
 ## Requisitos Não Funcionais (SLO)
 - DAU (Daily Active Users)
@@ -38,15 +53,36 @@
 - RPS Médio
 - RPS Pico
 - Tempo de resposta (p95, latência)
+- Mínimo 2 tasks/pods para ter Alta Disponibilidade
 
 ## Importância dos Percentis na Latência
 
-### Exemplo de Média Enganosa
+O p95 (percentil 95) é uma métrica estatística usada para medir a latência de uma API ou sistema.
+Ele representa o tempo máximo de resposta dentro do qual 95% das requisições são realizadas.
+
 ```plaintext
 Latências: [100ms, 110ms, 105ms, 120ms, 150ms, 180ms, 2500ms]
 Média = 463,57ms
 Percentil 95 (p95) = **2500ms**
 ```
+
+
+## Configurações do script de teste
+
+- VUs x RPS
+- Uso de número de VU elevado
+- Rampa
+- Calculo de execuções simultâneas
+
+## MORE TESTS
+<br>
+<br>
+<br>
+
+<br>
+<br>
+<br>
+<br>
 
 ## Threads
 
