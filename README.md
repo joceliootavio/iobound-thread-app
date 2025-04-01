@@ -1,5 +1,8 @@
-### Tecnologias testes de performance
+# Testes de Performance
 
+## Tecnologias Utilizadas
+
+### Ferramentas de Teste de Performance
 - Docker
 - k6
 - Grafana
@@ -10,66 +13,67 @@
 - VisualVM
 - Micrometer
 
-### Tecnologias Microserviço
-
+### Tecnologias do Microserviço
 - Java 21
 - Spring Boot 3.4
 - Kotlin 1.9.0
 - Open Feign
-- Postgres
+- PostgreSQL
 - Undertow
 
-
-### Pontos de atenção
-- Experimentar configurações
+## Pontos de Atenção
+- Experimentar diferentes configurações
 - Limitar recursos nos containers
-- Manter máquina ligada
-- Considerar que local não temos Latência adicional de rede AWS
-- No ambiente de produção o Datadog Agent adiociona em 20% o uso de cpu
-- Uso de https para considerar o uso de cpu pelo processo de criptografia
-- Configuração inicial do java-app será 2vCPU e 1GB de memória
-- Testes realizados apenas com 1 container pois o intuito é testar a capacidade de uma unidade do microserviço.
-- Importante realizar teste adicional para validar o uso de mais de uma task/pod em ambiente AWS, assim como o auto-scaling 
+- Manter a máquina ligada durante os testes
+- Considerar que, localmente, não há latência adicional de rede AWS
+- No ambiente de produção, o Datadog Agent adiciona 20% ao uso de CPU
+- Uso de HTTPS impacta o consumo de CPU devido ao processo de criptografia
+- Configuração inicial do Java App: 2 vCPU e 1GB de memória
+- Testes realizados com apenas 1 container para avaliar a capacidade unitária do microserviço
+- Importante testar múltiplas tasks/pods em ambiente AWS e validar auto-scaling
 
+## Requisitos Não Funcionais (SLO)
+- DAU (Daily Active Users)
+- Throughput
+- RPS Médio
+- RPS Pico
+- Tempo de resposta (p95, latência)
 
-### Requisitos não funcionais (SLO)
-  - DAU
-  - Throughput
-  - RPS Médio
-  - RPS Pico
-  - Tempo de resposta (p95, Latência)
- 
+## Importância dos Percentis na Latência
 
-#### Exemplo de média ruim
+### Exemplo de Média Enganosa
+```plaintext
+Latências: [100ms, 110ms, 105ms, 120ms, 150ms, 180ms, 2500ms]
+Média = 463,57ms
+Percentil 95 (p95) = **2500ms**
+```
 
-    Latências: [100ms, 110ms, 105ms, 120ms, 150ms, 180ms, 2500ms]
-    Média = 463,57ms
-    Percentil 95 (p95) = **2500ms**
+## Threads
 
+### Pool de Threads
+![Pool de Threads](images/pool_threads.png)
 
-### Threads
-
-#### Pool de threads
-![Pool de threads](images/pool_threads.png)
-
-
-#### Virtual threads
+### Virtual Threads
 ![Threads Virtuais](images/virtual_threads.png)
 
+## Comandos Úteis
 
-
-## Comandos úteis
-
+### Monitoramento de Containers
+```bash
 docker stats --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemPerc}}\t{{.MemUsage}}"
+```
 
-### Parametros JVM testados
-
+### Parâmetros JVM Testados
+```bash
 java -XX:+UnlockDiagnosticVMOptions -XX:+LogTouchedMethods -jar target/iobound-thread-app-0.0.1-SNAPSHOT.jar
 java -Xshare:off -XX:+UnlockDiagnosticVMOptions -XX:+LogTouchedMethods -jar target/iobound-thread-app-0.0.1-SNAPSHOT.jar > classlist.txt
 java -Xshare:dump -XX:SharedClassListFile=classlist.txt -XX:SharedArchiveFile=spring-cds.jsa -jar target/iobound-thread-app-0.0.1-SNAPSHOT.jar
 java -Xshare:on -XX:SharedArchiveFile=spring-cds.jsa -jar target/iobound-thread-app-0.0.1-SNAPSHOT.jar
 java -Dspring.aot.enabled=true -jar target/iobound-thread-app-0.0.1-SNAPSHOT.jar
+```
 
+### Ajustes de Performance na JVM
+```bash
 -XX:MaxRAMPercentage=75
 -XX:+UseParallelGC
 -XX:MaxGCPauseMillis=200
@@ -80,176 +84,116 @@ java -Dspring.aot.enabled=true -jar target/iobound-thread-app-0.0.1-SNAPSHOT.jar
 -XX:NewRatio=1
 -XX:+UseAdaptiveSizePolicy
 -XX:MaxHeapFreeRatio=100
+```
 
-### Gerar certificado
-
+### Geração de Certificado
+```bash
 keytool -genkeypair -alias mycert -keyalg RSA -keysize 2048 -storetype PKCS12 \
 -keystore keystore.p12 -validity 3650 \
 -dname "CN=localhost, OU=Dev, O=Company, L=City, ST=State, C=BR" \
 -storepass changeit -keypass changeit
+```
 
-### Copiar certificados para maquina local
-
+### Copiar Certificados do Container para a Máquina Local
+```bash
 docker cp java_app_mock:/app/certs/. ./certs
+```
 
-## Melhor estratégia
+## Estratégia de Testes
 
 ### Meta
 - RPS Inicial: 250
 - RPS Final: 500
-- 2 chamadas de api de 100ms síncronas
+- 2 chamadas de API síncronas de 100ms
 
-### Configurações Winner
+### Configuração Vencedora
 - Web Container: Undertow
-- Threads virtuais: false
+- Threads Virtuais: false
 - Threads: 200
 - CPU: 2 vCPU
-- Memória 1GB
-- Parametros JVM: não aplicado
+- Memória: 1GB
+- Parâmetros JVM: não aplicados
 
-Aumentar para 200 Threads de plataforma é a unica estratégia que não afeta o tempo de resposta mesmo quando o RPS aumenta
-CPU deu pico de 56% no momento que dobra o RPS mas depois voltou a média de 30%
+### Observações
+- Aumento para 200 threads de plataforma não impacta o tempo de resposta, mesmo com aumento no RPS
+- Pico de CPU de 56% ao dobrar o RPS, estabilizando em 30%
 
 ### Mock
+- Suporta até 3000 RPS com no máximo 10ms de overhead
 
-Suporta até 3000 RPS com no máximo 10ms de overhead
+### Impacto do HTTPS
+- Chamadas HTTPS aumentam o uso de CPU e tempo de resposta
 
-### Https
+### Primeira Requisição (First Request)
+- Overhead 5x maior ao usar objetos serializados, possivelmente causado por lazy loading do Spring + reflection
 
-Chamadas https aumentam o uso de cpu e o tempo de resposta
+## Configurações de Ambiente
+- API Mock p95: 206ms
+- Virtual Threads: true
+- Java Opts: não aplicados
+- AOT: não aplicado
+- CDS: não aplicado
+- GraalVM Native: não aplicado
 
-### First request
-
-Primeira execução tem um overhead 5x maior quando utilizamos objetos serializados, ao que tudo indica nos logs é um overhead
-trazido pela estratégia lazy loading do spring + reflection.
-
-### Configurações ambiente
-
-- Api mock p95: 206ms
-- Virtual threads: true
-- Java opts: Não aplicado
-- AOT: Não aplicado
-- CDS: Não aplicado
-- GraalVM Native: Não aplicado
-
-#### K6
-- Inicio de 4 minutos com metade da meta de RPS
-- 5 minutos com o valor da meta de RPS
+### Configuração de Teste no K6
+- 4 minutos com metade do RPS alvo
+- 5 minutos com RPS na meta
 - 2 minutos de pico com 20% acima da meta
 
 ### Metas
-
 - Throughput: 400 RPS
 - p95: 420ms
 - SSL: true
-- Uso de cpu: 60%
-- Uso de memõria: 60%
+- Uso de CPU: 60%
+- Uso de Memória: 60%
 - Pico de 50%
 
-### Uso de 0,5 cpu
+## Comparação entre Fargate e EKS
+- **Fargate** aloca no mínimo 2x a memória para cada 1x vCPU
+- **EKS** permite variação dinâmica de CPU e memória, funcionando como auto-scaling vertical
 
-Observamos os seguintes pontos:
-- A aplicação demora mais para estabilizar o tempo de resposta
-- Ao atingir o RPS 100 a aplicação atinge o p95 de 404ms
-- Ao aumentar em 50% o RPS o uso de cpu topa, o tempo de resposta da aplicação degrada e não atinge o pico de 300 RPS
-- Bastante variação no uso de cpu
+## Cálculo de Execuções Simultâneas
+```plaintext
+RPS x (Tempo médio de resposta) / 1000 = 400 x 420 / 1000 = 168 Threads
+```
 
-### Coroutines com operações bloqueantes
+## Considerações sobre Threads
+- Cada plataforma thread na JVM aloca 1MB de memória
+- O pool de conexões do Hikari no Spring, por padrão, mantém 10 conexões abertas
 
-- Uso de thread.sleep vai travar a thread e exigir que sejam criadas mais threads até o limite (64) do pool de threads do coroutine.
-- Virtual threads não vai ajudar se vc não usar um pool virtual em coroutines, ao menos que a coroutine seja usada apenas no método do controller.
+## Principais Gargalos
+- Pool de Threads
+- Pool de Conexões
+- Índices de Banco
+- CPU e Memória
+- Dependências externas (APIs, bancos de dados, SNS/SQS, Kafka)
 
-### Fargate vs EKS
+## Cuidados ao Executar Testes
+- Reiniciar a aplicação antes de cada teste para evitar otimizações do JIT
+- Aumentar o RPS gradualmente
 
-O fargate tem uma regra de alocar no mĩnimo 2x memória para cada 1x vCPU, isso faz com que tenhamos sempre uma boa quantidade
-de memõria para trabalhar.
+## Latência em Ambiente AWS
+- Latência média de 7ms para cada chamada de API REST
 
-Já o EKS tem a vantagem de variar o uso de cpu e memória entre o requests e o limits, e assim ẽ possível usar o máximo de cpu
-na inicialização e nos momentos de pico de uso, funcionando como um auto-scaling vertical.
+## Impacto do Alto Acoplamento em Microserviços
+- Dependências com tempos de resposta variáveis degradam a performance
 
-### Calculo de execuções simuntaneas
+## Estratégias de Auto-Scaling
+- Auto-scaling baseado apenas em CPU/memória pode ser ineficiente
 
-RPS x (Tempo médio de resposta) / 1000 => 400 x 420 / 1000 = 168 Threads
+## Configuração de VUs no K6
+- Número máximo de VUs deve refletir execuções simultâneas esperadas
+- Preferir `progressive vus` ao invés de `progressive rps`
 
-### Uso de platform threads
+## Comparação: HttpClient vs Feign Client
+- **HttpClient**: Suportou 800 RPS com tempo máximo de 1s
+- **Feign Client**: Falhou antes de atingir 50 RPS
 
-Por padrão a JVM aloca para cada thread 1MB, por esse motivo devemos ter bastante cuidado ao definir o tamanho do pool de threads, pode ser que a máquina não tenha memória suficiente.
+## Testes com Programação Reativa
+- Pico de 500 RPS no `progressive_rps`
 
-### RDS
+## Próximos Passos
+- Incluir chamadas ao DynamoDB
+- Incluir Datadog Agent
+- Testar GraalVM
 
-Por padrão no Spring o hikari (pool de conexões) vem com no máximo 10 conexões abertas, ou seja, se a sua aplicação mantém por muito tempo a conexão aberta isso pode virar um gargalo.
-
-### Pedágios
-
-- IO bloqueantes
-- Criptografia
-- Instrumentação de ferramentas de APM
-- Logs
-- Reflexão
-- Compilação
-  - JIT
-  - AOT
-  - Native
-
-### Gargalos
-- Pool de threads
-- Pool de conexões
-- Índices
-- CPU
-- Memória
-- Serviços de terceiros
-  - Apis
-  - Banco de dados
-  - SNS/SQS
-  - Kafka
-
-
-### Atenção nos testes
-
-- Reinicie a aplicação sempre que for executar um novo teste pois o JIT pode ter otimizado o código.
-- Inicie o teste com no máximo metade do RPS que deseja atingir, simulando cenário de rollout em prod.
-
-### Ambiente AWS
-- No ambiente AWS incluímos a latência mẽdia de 7ms para cada chamada de api rest.
-
-### Serviços com auto acoplamento
-
-Quando o microserviço tem um alto acoplamento com suas dependências qualquer oscilação no tempo de resposta de uma das dependências degrada a performance do microserviço e consequentemente sua capacidade.
-
-### Autoscaling
-
-Em aplicações que não é usado o máximo da capacidade dos recursos o autoscaling por cpu ou memória é ineficiente.
-
-### Quantidade de VUs no k6
-
-É importante definir como máximo de VUs o nũmero de execuções simultaneas que queremos atingir, pois usar um valor muito alto pode enfileirar as requisicoes.
-Favoreça o uso de progressive vus ao invés de progressive rps
-
-### HttClient x Feign Client com virtual threads
-
-Configuração:
-- Rest Client: Http Client
-- Serialização: Não
-- Async: false
-- Virtual threads: true
-
-Suportou o pico de 800 RPS com um tempo máximo de resposta de 1s
-
-Configuração:
-- Rest Client: Feign Client
-- Serialização: Sim
-- Async: false
-- Virtual threads: true
-
-Parou de executar ao chegar em menos de 50 RPS
-
-### Reativo
-
-Reativo atinge o pico de 500 RPS no progressive_rps
-
-
-### Próximos passos
-
-- Incluir chamada no DynamoDB
-- Incluir Agent datadog
-- GraalVM
