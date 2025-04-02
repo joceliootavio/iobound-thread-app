@@ -1,6 +1,6 @@
-package br.com.benchmark.iobound_thread_app.api
+package br.com.benchmark.iobound_thread_app.adapter.`in`.api
 
-import br.com.benchmark.iobound_thread_app.api.response.*
+import br.com.benchmark.iobound_thread_app.adapter.`in`.api.response.*
 import kotlinx.coroutines.delay
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader

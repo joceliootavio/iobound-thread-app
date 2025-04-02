@@ -1,4 +1,4 @@
-package br.com.benchmark.iobound_thread_app.api.response
+package br.com.benchmark.iobound_thread_app.adapter.`in`.api.response
 
 data class User(
     val id: Int,

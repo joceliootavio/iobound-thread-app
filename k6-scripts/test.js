@@ -10,19 +10,13 @@ export let options = {
            startRate: 10,  // Começa com 10 RPS
            timeUnit: '1s', // Medido por segundo
            preAllocatedVUs: 10,
-           maxVUs: 60,
+           maxVUs: 20,
            stages: [
-               { duration: '1m', target: 1000 },
-               { duration: '1m', target: 1000 },
+               { duration: '2m', target: 200 },
+               { duration: '1m', target: 300 },
            ],
-//            stages: [ otimized
-//                { duration: '2m', target: 50 },
-//                { duration: '4m', target: 200 },
-//                { duration: '4m', target: 300 },
-//                { duration: '2m', target: 80 }
-//            ],
         // progressive_vus: {
-        //     executor: 'ramping-vus',  // Define um crescimento de RPS
+        //     executor: 'ramping-vus',
         //     stages: [
         //         { duration: '1m', target: 50 },
         //         { duration: '2m', target: 200 },
@@ -50,12 +44,13 @@ export let options = {
 export default function () {
 //    let uri = __ENV.APP_CONTEXT + "/api/coroutine/from-api/user?delay=200&times=2&async=true"
 //    let uri = __ENV.APP_CONTEXT + "/api/reactive/from-api/user?delay=200&times=2"
-    let uri = __ENV.APP_CONTEXT + "/mock/user?sleep=200"
+//    let uri = __ENV.APP_CONTEXT + "/mock/user?sleep=200"
 
-//    let uri = __ENV.APP_CONTEXT + "/api/blocking/from-api/user?anyParam=1"
-//                    + "&memoryOps=quadratic"
-//                    + "&userFromRds=e07d7927-6659-4668-9b95-54f7ef91334b"
-//                    + "&times=2&delay=600"
+    let uri = __ENV.APP_CONTEXT + "/api/blocking/from-api/user?anyParam=1"
+                    + "&memoryOps=quadratic"
+                    + "&userFromRds=random"
+//                    + "&async=true"
+                    + "&times=1&delay=200"
 
     let res = http.get(uri);
 

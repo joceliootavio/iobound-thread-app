@@ -1,6 +1,6 @@
 package br.com.benchmark.iobound_thread_app.adapter.out.feign
 
-import br.com.benchmark.iobound_thread_app.api.response.User
+import br.com.benchmark.iobound_thread_app.adapter.`in`.api.response.User
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam

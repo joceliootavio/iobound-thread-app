@@ -1,8 +1,8 @@
-package br.com.benchmark.iobound_thread_app.api
+package br.com.benchmark.iobound_thread_app.adapter.`in`.api
 
+import br.com.benchmark.iobound_thread_app.adapter.`in`.api.response.User
 import br.com.benchmark.iobound_thread_app.adapter.out.feign.FeignWebClient
 import br.com.benchmark.iobound_thread_app.adapter.out.rds.DatabaseService
-import br.com.benchmark.iobound_thread_app.api.response.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -19,16 +19,6 @@ class CoroutineApi(
 ) {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
-
-    @GetMapping("/from-rds/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    suspend fun fetchRecord(
-        @PathVariable("id") id: String
-    ) {
-        val start = System.currentTimeMillis()
-        databaseService.findById(id)
-        logger.info("endpoint from-rds executado em ${System.currentTimeMillis() - start}ms")
-    }
 
     @GetMapping("/from-api/user", produces = ["application/json"])
     @ResponseStatus(HttpStatus.OK)

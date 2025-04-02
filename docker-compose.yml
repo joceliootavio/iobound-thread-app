@@ -27,12 +27,12 @@ services:
     container_name: java_app
     environment:
       JDBC_URL: "postgres_container"
-#      REST_URI: "http://java-app-mock:8080"
       REST_URI: "https://java-app-mock:8443"
+#      SERVER_UNDERTOW_THREADS_WORKER: 100
+#      REST_URI: "http://java-app-mock:8080"
 #      VIRTUAL_THREADS: "true"
 #      THREAD_POOL_TYPE: "VIRTUAL_THREADS"
 #      THREAD_POOL_SIZE: "200"
-#      SERVER_UNDERTOW_THREADS_WORKER: 100
 #      SERVER_UNDERTOW_THREADS_IO: 4
     volumes:
       - .:/app
@@ -58,8 +58,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.0"
-          memory: "2g"
+          cpus: "2.0"
+          memory: "1g"
 
   influxdb:
     image: influxdb:1.11.8

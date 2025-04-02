@@ -1,4 +1,4 @@
-package br.com.benchmark.iobound_thread_app.api
+package br.com.benchmark.iobound_thread_app.adapter.`in`.api
 
 import jakarta.servlet.http.HttpServlet
 import jakarta.servlet.http.HttpServletRequest

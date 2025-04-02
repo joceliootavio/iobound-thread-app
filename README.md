@@ -85,13 +85,6 @@ Se a prioridade for garantir uma experiência rápida para o usuário, o tempo d
 Já se o foco for processar o máximo de requisições possível, o throughput (RPS) deve ser priorizado. 
 O ideal é encontrar um equilíbrio, garantindo baixa latência sem comprometer a capacidade de processamento.
 
-## Configurações do script de teste
-
-- VUs x RPS
-- Uso de número de VU elevado
-- Rampa
-- Calculo de execuções simultâneas
-
 ## MORE TESTS
 <br>
 <br>
@@ -110,7 +103,6 @@ O ideal é encontrar um equilíbrio, garantindo baixa latência sem comprometer 
 ### Virtual Threads
 ![Threads Virtuais](images/virtual_threads.png)
 
-
 ## FinOps
 - O Fargate custa em mẽdia R$ 320,00 / vCPU
 - Hoje temos 34 microserviços na nossa conta AWS
@@ -118,6 +110,18 @@ O ideal é encontrar um equilíbrio, garantindo baixa latência sem comprometer 
 ## Possíveis Soluções
 - Otimizar os parâmetros da JVM
 - Spring Native + GraalVM
+
+## TROUBLESHOOTING
+<br>
+<br>
+
+
+<br>
+
+<br>
+<br>
+<br>
+<br>
 
 ## Observabilidade 
 
@@ -151,6 +155,11 @@ Uma aplicação IO-Bound é limitada pela velocidade de operações de entrada e
 
 **Threads em estado waiting ou blocked não consomem CPU ativamente, pois estão aguardando a liberação de um recurso ou a conclusão de uma operação externa. Durante esse tempo, a CPU pode ser utilizada por outras threads em execução, otimizando o uso dos recursos do sistema.**
 
+## Configurações do script de teste
+
+- VUs x RPS
+- Rampa
+- Calculo de execuções simultâneas
 
 ### Calculo de execuções simultâneas
 

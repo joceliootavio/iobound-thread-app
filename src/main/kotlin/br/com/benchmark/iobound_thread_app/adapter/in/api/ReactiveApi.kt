@@ -1,7 +1,7 @@
-package br.com.benchmark.iobound_thread_app.api
+package br.com.benchmark.iobound_thread_app.adapter.`in`.api
 
 import br.com.benchmark.iobound_thread_app.adapter.out.webclient.WebClientAdapter
-import br.com.benchmark.iobound_thread_app.api.response.User
+import br.com.benchmark.iobound_thread_app.adapter.`in`.api.response.User
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*

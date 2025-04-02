@@ -1,6 +1,6 @@
 package br.com.benchmark.iobound_thread_app.adapter.out.http
 
-import br.com.benchmark.iobound_thread_app.api.response.User
+import br.com.benchmark.iobound_thread_app.adapter.`in`.api.response.User
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value

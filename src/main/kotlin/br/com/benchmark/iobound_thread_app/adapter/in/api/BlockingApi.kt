@@ -1,10 +1,10 @@
-package br.com.benchmark.iobound_thread_app.api
+package br.com.benchmark.iobound_thread_app.adapter.`in`.api
 
 import br.com.benchmark.iobound_thread_app.adapter.out.feign.FeignWebClient
 import br.com.benchmark.iobound_thread_app.adapter.out.http.HttpMockClient
 import br.com.benchmark.iobound_thread_app.adapter.out.rds.DatabaseService
 import br.com.benchmark.iobound_thread_app.adapter.out.rds.entity.CustomerEntity
-import br.com.benchmark.iobound_thread_app.api.response.User
+import br.com.benchmark.iobound_thread_app.adapter.`in`.api.response.User
 import br.com.benchmark.iobound_thread_app.application.service.MemoryOpsService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
