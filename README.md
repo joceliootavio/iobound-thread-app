@@ -32,12 +32,14 @@ Simular cenários reais em ambiente controlado permite ajustes antecipados, gara
 - Undertow
 
 ## Estratégias utilizadas
+- Dashboard consolidando métricas K6 + Micrometer
 - Experimentar diferentes configurações
 - Limitar recursos nos containers
 - Manter a máquina ligada durante os testes
 - Json User mockado com 20 atributos
 - Operação em memõria (n2) com um array de UUID de 100 elementos
 - Busca em uma tabela no RDS usando a pk como filtro com UUID gerados randomicamente
+- Tabela com 10000 registros
 - Uso de HTTPS impacta o consumo de CPU devido ao processo de criptografia
 - Configuração inicial do Java App: 2 vCPU e 1GB de memória
 - Testes realizados com apenas 1 container para avaliar a capacidade unitária do microserviço
