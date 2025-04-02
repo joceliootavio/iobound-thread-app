@@ -21,7 +21,7 @@ Simular cenários reais em ambiente controlado permite ajustes antecipados, gara
 - Mission Control
 - VisualVM
 
-### Microserviço Spring
+### Microserviço
 - Java 21
 - Spring Boot 3.4
 - Kotlin 1.9.0
