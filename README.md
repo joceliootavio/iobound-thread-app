@@ -97,14 +97,6 @@ O ideal é encontrar um equilíbrio, garantindo baixa latência sem comprometer 
 <br>
 <br>
 
-## Threads
-
-### Pool de Threads
-![Pool de Threads](images/pool_threads.png)
-
-### Virtual Threads
-![Threads Virtuais](images/virtual_threads.png)
-
 ## FinOps
 - O Fargate custa em mẽdia R$ 320,00 / vCPU
 - Hoje temos 34 microserviços na nossa conta AWS
@@ -125,7 +117,7 @@ O ideal é encontrar um equilíbrio, garantindo baixa latência sem comprometer 
 <br>
 <br>
 
-## Observabilidade 
+## Observabilidade
 
 ### Four Golden Signals
 
@@ -136,6 +128,14 @@ Tráfego – Volume de requisições ou dados recebidos pelo sistema, podendo se
 Erros – Taxa de falhas no sistema, como respostas HTTP 5xx, timeouts ou exceções.
 
 Saturação – Quanto o sistema está próximo do seu limite de capacidade, como uso de CPU, memória ou conexões ativas.
+
+## Threads
+
+### Pool de Threads
+![Pool de Threads](images/pool_threads.png)
+
+### Virtual Threads
+![Threads Virtuais](images/virtual_threads.png)
 
 ## Gargalos
 Gargalos ocorrem quando um recurso limita o desempenho do sistema. Entre os principais estão pool de conexões, CPU, memória, full scans em banco de dados e dependências externas como APIs e filas. Além disso, a má configuração do pool de threads pode causar contenção e aumentar a latência. Exemplos:
